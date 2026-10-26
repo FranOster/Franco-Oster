@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="theme-color" content="#f5f7fb">
+  <title>Registro Académico</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body class="min-h-screen bg-slate-50 text-slate-800 antialiased">
+  <main class="mx-auto max-w-5xl px-4 py-8 sm:px-6">
+    <header class="mb-8 flex flex-col gap-4 border-b border-slate-200 pb-6 sm:flex-row sm:items-center sm:justify-between">
+      <div><p class="text-sm font-semibold uppercase tracking-widest text-indigo-600">Panel de gestión</p><h1 class="mt-1 text-3xl font-bold tracking-tight">Registro académico</h1><p class="mt-1 text-slate-500">Alumnos, materias e inscripciones</p></div>
+      <div id="account-bar" class="hidden items-center gap-3 rounded-xl border border-slate-200 bg-white px-4 py-3 shadow-sm"><div><p id="account-name" class="font-semibold"></p><p id="account-role" class="text-xs text-slate-500"></p></div><button id="logout-button" class="rounded-lg border border-slate-200 px-3 py-2 text-sm font-medium hover:bg-slate-50">Cerrar sesión</button></div>
+    </header>
+    <div id="notice" class="mb-5 hidden rounded-lg px-4 py-3 text-sm" role="status"></div>
+    <section id="login-panel" class="mx-auto max-w-md rounded-2xl border border-slate-200 bg-white p-6 shadow-sm sm:p-8">
+      <h2 class="text-xl font-semibold">Iniciar sesión</h2><p class="mt-1 mb-6 text-sm text-slate-500">Ingresa con tu cuenta institucional.</p>
+      <form id="login-form" class="space-y-4"><label class="block text-sm font-medium">Usuario<input id="login-username" required autocomplete="username" class="field mt-1" maxlength="50"></label><label class="block text-sm font-medium">Contraseña<input id="login-password" type="password" required autocomplete="current-password" class="field mt-1"></label><button class="w-full rounded-lg bg-indigo-600 px-4 py-2.5 font-semibold text-white hover:bg-indigo-700">Ingresar</button></form>
+      <p class="mt-5 text-xs leading-relaxed text-slate-400">El administrador inicial se configura en el archivo <code>.env</code> al instalar el sistema.</p>
+    </section>
+    <div id="app-panel" class="hidden space-y-6">
+      <section class="grid gap-6 lg:grid-cols-2">
+        <article id="student-admin" class="panel"><div class="panel-heading"><div><h2>Alumnos</h2><p>Registro académico de estudiantes</p></div></div><form id="student-form" class="form-grid"><input id="student-id" type="hidden"><label>Nombre<input id="student-first" class="field" required maxlength="80"></label><label>Apellido<input id="student-last" class="field" required maxlength="80"></label><label>Edad<input id="student-age" class="field" type="number" min="17" max="120" required></label><div class="flex items-end gap-2"><button id="student-submit" class="primary-button flex-1">Registrar alumno</button><button id="student-cancel" type="button" class="secondary-button hidden">Cancelar</button></div></form></article>
+        <article id="subject-admin" class="panel"><div class="panel-heading"><div><h2>Materias</h2><p>Administración de materias y cupos</p></div></div><form id="subject-form" class="form-grid"><input id="subject-id" type="hidden"><label>Nombre de la materia<input id="subject-name" class="field" required maxlength="80"></label><label>Cupo máximo<input id="subject-capacity" class="field" type="number" min="1" max="10000" required></label><div class="flex items-end gap-2"><button id="subject-submit" class="primary-button flex-1">Registrar materia</button><button id="subject-cancel" type="button" class="secondary-button hidden">Cancelar</button></div></form></article>
+      </section>
+      <section class="grid gap-6 lg:grid-cols-2">
+        <article class="panel"><div class="panel-heading"><div><h2>Alumnos registrados</h2><p>Consulta y gestión de alumnos</p></div><span id="student-count" class="counter"></span></div><div id="student-list" class="record-list"></div></article>
+        <article class="panel"><div class="panel-heading"><div><h2>Materias disponibles</h2><p>Inscripciones actuales respecto al cupo</p></div><span id="subject-count" class="counter"></span></div><div id="subject-list" class="record-list"></div></article>
+      </section>
+      <section class="panel"><div class="panel-heading"><div><h2>Inscripción a materias</h2><p>El alumno puede inscribirse en hasta ocho materias.</p></div></div><form id="enrollment-form" class="flex flex-col gap-3 sm:flex-row sm:items-end"><label class="flex-1">Alumno<select id="enrollment-student" class="field mt-1" required></select></label><label class="flex-1">Materia<select id="enrollment-subject" class="field mt-1" required></select></label><button class="primary-button">Inscribir alumno</button></form><div class="mt-6"><h3 class="mb-2 text-sm font-semibold text-slate-700">Inscripciones actuales</h3><div id="enrollment-list" class="record-list"></div></div></section>
+      <section id="user-admin" class="panel hidden"><div class="panel-heading"><div><h2>Usuarios y roles</h2><p>Solo administradores pueden gestionar cuentas.</p></div></div><form id="user-form" class="grid gap-3 sm:grid-cols-2 lg:grid-cols-4"><label>Nombre de usuario<input id="user-name" class="field mt-1" required minlength="3" maxlength="50" autocomplete="off"></label><label>Contraseña inicial<input id="user-password" class="field mt-1" type="password" required minlength="12" autocomplete="new-password"></label><label>Rol<select id="user-role" class="field mt-1"><option value="docente">Docente</option><option value="admin">Administrador</option></select></label><button class="primary-button self-end">Crear usuario</button></form><div id="user-list" class="record-list mt-5"></div></section>
+      <section class="panel"><div class="panel-heading"><div><h2>Seguridad de la cuenta</h2><p>Cambia tu contraseña. Se requieren al menos 12 caracteres.</p></div></div><form id="password-form" class="grid gap-3 sm:grid-cols-2 lg:grid-cols-3"><label>Contraseña actual<input id="current-password" class="field mt-1" type="password" required autocomplete="current-password"></label><label>Nueva contraseña<input id="new-password" class="field mt-1" type="password" required minlength="12" autocomplete="new-password"></label><button class="primary-button self-end">Cambiar contraseña</button></form></section>
+    </div>
+    <footer class="mt-8 text-center text-xs text-slate-400">Sistema de registro académico · Almacenamiento persistente SQLite</footer>
+  </main>
+  <script src="script.js" defer></script>
+</body>
+</html>
